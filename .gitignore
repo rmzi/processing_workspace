@@ -1,0 +1,18 @@
+# Mac / *nix Stuff
+.DS_Store
+*.swp
+
+# Folders
+libraries/
+modes/
+templates/
+examples/
+tools/
+
+# Built Applications / Applets
+applet
+application.linux32
+application.linux64
+application.windows32
+application.windows64
+application.macosx
