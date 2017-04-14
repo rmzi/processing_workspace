@@ -1,22 +1,58 @@
 import themidibus.*;
+import processing.sound.*;
 
+// Keep Track of Knob Values
 float knob[] = new float[256];
 float knob_color[] = new float[256];
+
+// X & Y Positions
 float x = width/2;
 float y = height/2;
+
+// X & Y Velocities
 float xSpeed = 1;
 float ySpeed = 1;
+
+// Bounds on X and Y, and bounding the circleSizes.
 float boundX, boundY, circleSizeX, circleSizeY;
+
+// Midi Info
 MidiBus myBus;
 int channel, number,value;
 
+// Sine Wave Oscillators
+SinOsc[] sineWaves;
+float[] sineFreq;
+int numSines = 5;
+
 void setup(){
+  
+  // Screen Setup
   size(750,1000);
   //fullScreen();
   background(105);
+  
+  // Initialize Midi
   myBus = new MidiBus(this, 0, 1);
+  
+  // Initialize Bounds
   boundX = 1;
   boundY = 1;
+  
+  // Sine Wave Instantiation
+  sineWaves = new SinOsc[numSines];
+  sineFreq = new float[numSines];
+  
+  for (int i = 0; i < numSines; i++) {
+    // Calculate the amplitude for each oscillator
+    float sineVolume = (1.0 / numSines) / (i + 1);
+    // Create the oscillators
+    sineWaves[i] = new SinOsc(this);
+    // Start Oscillators
+    sineWaves[i].play();
+    // Set the amplitudes for all oscillators
+    sineWaves[i].amp(sineVolume);
+  }
 }
 void draw(){
 
@@ -63,14 +99,20 @@ void draw(){
     ySpeed = ySpeed * -1;
   }
 
-
-
   // clear the board
   if(this.knob[42] == 1){
     background(105);
-    print("WE AT IT AGAIN!");
   }
 
+  // Sound Stuff
+  float frequency = pow(1000, knob[21]) + 150;
+  float detune = map(knob[22], 0, 1, -0.5, 0.5);
+  
+  for (int i = 0; i < numSines; i++) { 
+    sineFreq[i] = frequency * (i + 1 * detune);
+    // Set the frequencies for all oscillators
+    sineWaves[i].freq(sineFreq[i]);
+  }
 }
 
 void controllerChange(int channel, int number, int value){
