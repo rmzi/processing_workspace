@@ -1,86 +1,87 @@
-import themidibus.*; //Import the library
+import themidibus.*;
 
-MidiBus myBus; // The MidiBus
-int channel, number, value, where_we_at;
+float knob[] = new float[256];
+float knob_color[] = new float[256];
+float x = width/2;
+float y = height/2;
+float xSpeed = 1;
+float ySpeed = 1;
+float boundX, boundY, circleSizeX, circleSizeY;
+MidiBus myBus;
+int channel, number,value;
 
-void setup() {
-  fullScreen();
-  //size(500,500);
-  background(255);
-
-  MidiBus.list(); // List all available Midi devices on STDOUT. This will show each device's index and name.
-
-  // Either you can
-  //                   Parent In Out
-  //                     |    |  |
-  //myBus = new MidiBus(this, 0, 1); // Create a new MidiBus using the device index to select the Midi input and output devices respectively.
-
-  // or you can ...
-  //                   Parent         In                   Out
-  //                     |            |                     |
-  //myBus = new MidiBus(this, "IncomingDeviceName", "OutgoingDeviceName"); // Create a new MidiBus using the device names to select the Midi input and output devices respectively.
-
-  // or for testing you could ...
-  //                 Parent  In        Out
-  //                   |     |          |
-  //myBus = new MidiBus(this, -1, "Java Sound Synthesizer"); // Create a new MidiBus with no input device and the default Java Sound Synthesizer as the output device.
+void setup(){
+  size(750,1000);
+  //fullScreen();
+  background(105);
   myBus = new MidiBus(this, 0, 1);
+  boundX = 1;
+  boundY = 1;
+}
+void draw(){
+
+  // Update x position
+  x = x + xSpeed * this.knob[1];
+  //println("x: ", x);
+
+  // Update y position
+  y = y + ySpeed * this.knob[2];
+  //println("y: ", y);
+
+  //no stroke on shapes
+  //noStroke();
+
+  // Color the Circles
+  fill(this.knob_color[3],this.knob_color[4],this.knob_color[5]);
+
+  //control shape stroke
+  if(this.knob[43]== 1){
+    noStroke();
+  }
+
+  // Fill the page with shapes!
+
+  for(int i = 0; i < knob[6]; i++){
+    ellipse((x * (float)Math.random()),(y * (float)Math.random()),(float)Math.random() * knob[7] * 100,(float)Math.random() * knob[7] * 100);
+  }
+
+  fill(this.knob_color[21],this.knob_color[22],this.knob_color[23]);
+
+  // Fill the page with shapes!
+
+  for(int i = 0; i < knob[24]; i++){
+    //ellipse((x * (float)Math.random()),(y * (float)Math.random()),(float)Math.random() * knob[7] * 100,(float)Math.random() * knob[7] * 100);
+    rect((x * (float)Math.random()),(y * (float)Math.random()),(float)Math.random() * knob[25] * 100,(float)Math.random() * knob[26] * 100);
+  }
+
+  // "Bounce" Logic
+  if (x > (width-boundX) || x < boundX){
+    xSpeed = xSpeed *-1;
+  }
+
+  if (y > (height-boundY) || y < boundY) {
+    ySpeed = ySpeed * -1;
+  }
+
+
+
+  // clear the board
+  if(this.knob[42] == 1){
+    background(105);
+    print("WE AT IT AGAIN!");
+  }
+
 }
 
-void draw() {
-
-  this.where_we_at++;
-  this.where_we_at = this.where_we_at % 1500;
-  
-  // Debug
-  text(this.channel,this.where_we_at, (this.where_we_at * (this.value) * 2) % 1000);
-  text(this.number,this.where_we_at, (this.where_we_at * (this.value + 10) * 2) % 1000);
-  text(this.value,this.where_we_at, (this.where_we_at * (this.value + 20) * 6) % 1000);
-  text("Spaghet",this.where_we_at, (this.where_we_at * (this.value + 30) * 3) % 1000);
-
-  // Draw Rectangle
-  fill((this.number + this.value * 1.5) % 255, (this.value * 0.6), this.channel + this.value);
-  //rect((this.value * this.number * 2) % 1000, ((this.value * this.number) * 3) % 1000 , (this.value * this.number * 2) % 1000, this.value);
-
-  // Draw 8 Rectangles indicating location of slider
-  
-  
-}
-
-void noteOn(int channel, int pitch, int velocity) {
-  // Receive a noteOn
-  println();
-  println("Note On:");
-  println("--------");
-  println("Channel:"+channel);
-  println("Pitch:"+pitch);
-  println("Velocity:"+velocity);
-}
-
-void noteOff(int channel, int pitch, int velocity) {
-  // Receive a noteOff
-  println();
-  println("Note Off:");
-  println("--------");
-  println("Channel:"+channel);
-  println("Pitch:"+pitch);
-  println("Velocity:"+velocity);
-}
-
-void controllerChange(int channel, int number, int value) {
-  // Receive a controllerChange
-  println();
-  println("Controller Change:");
-  println("--------");
-  println("Channel:"+channel);
-  println("Number:"+number);
-  println("Value:"+value);
+void controllerChange(int channel, int number, int value){
   this.channel = channel;
   this.number = number;
   this.value = value;
-}
 
-void delay(int time) {
-  int current = millis();
-  while (millis () < current+time) Thread.yield();
+  println("channel: ", channel);
+  println("number: ", number);
+  println("value: ", value);
+
+  this.knob[number] = map(value, 0, 127, 0,1);
+  this.knob_color[number] = map(value, 0, 127, 0, 255);
 }
