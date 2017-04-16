@@ -25,6 +25,10 @@ SinOsc[] sineWaves;
 float[] sineFreq;
 int numSines = 5;
 
+// Oscillator Parameters
+float frequency;
+float detune;
+
 void setup(){
   
   // Screen Setup
@@ -57,11 +61,13 @@ void setup(){
 void draw(){
 
   // Update x position
-  x = x + xSpeed * this.knob[1];
+  //x = x + xSpeed * this.knob[1];
+  x = width * 2 * (float)Math.random();
   //println("x: ", x);
 
   // Update y position
-  y = y + ySpeed * this.knob[2];
+  //y = y + ySpeed * this.knob[2];
+  y = height * (float)Math.random(); 
   //println("y: ", y);
 
   //no stroke on shapes
@@ -105,11 +111,11 @@ void draw(){
   }
 
   // Sound Stuff
-  float frequency = pow(1000, knob[21]) + 150;
-  float detune = map(knob[22], 0, 1, -0.5, 0.5);
+  frequency = pow(1000,knob[5]) + 150;
+  detune = map(knob[22], 0, 1, -0.5, 0.5);
   
   for (int i = 0; i < numSines; i++) { 
-    sineFreq[i] = frequency * (i + 1 * detune);
+    sineFreq[i] = frequency * (float)Math.random() * (i + 1 * detune);
     // Set the frequencies for all oscillators
     sineWaves[i].freq(sineFreq[i]);
   }
